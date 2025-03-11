@@ -1,0 +1,18 @@
+cabal-version:   3.8
+name:            debtor
+version:         0.1.0.0
+license:         NONE
+author:          taraujonofre@gmail.com
+maintainer:      OnofreTZK
+build-type:      Simple
+extra-doc-files: README.md
+
+common warnings
+    ghc-options: -Wall
+
+executable debtor
+    import:           warnings
+    main-is:          Main.hs
+    build-depends:    base ^>=4.16.3.0
+    hs-source-dirs:   app
+    default-language: Haskell2010
