@@ -1,16 +1,19 @@
 {
   description = "Debtor Shell";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";  
+ inputs = {
+    #nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    flake-utils.url = "github:numtide/flake-utils";
+  };
 
-  outputs = { nixpkgs, ... }:
-    let
-      system = builtin.currentSystem;
+  outputs = { self, nixpkgs, flake-utils, ... }: 
+    flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ] (system: let
       pkgs = import nixpkgs { inherit system; };
-      haskellPackages = pkgs.haskell.packages.ghc944;  # Change GHC version if needed
+      ghc = "ghc984";
+      haskellPackages = pkgs.haskell.packages.${ghc};
     in
     {
-      devShells.${system}.default = haskellPackages.shellFor {
+      devShell = haskellPackages.shellFor {
         packages = p: [];  # Add project packages if needed
         buildInputs = with haskellPackages; [
           cabal-install
@@ -19,6 +22,5 @@
         ];
         withHoogle = true;
       };
-    };
+    });
 }
-
