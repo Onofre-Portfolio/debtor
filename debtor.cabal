@@ -12,5 +12,8 @@ extra-doc-files: CHANGELOG.md
 executable debtor
     main-is:          Main.hs
     hs-source-dirs:   app
+    other-modules:    Persistance
     default-language: Haskell2010
-    build-depends:    base >=4.19 && <4.20
+    build-depends:
+        base >=4.19 && <4.20,
+        directory
