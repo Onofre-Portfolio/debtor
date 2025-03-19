@@ -1,22 +1,53 @@
+{-# LANGUAGE DataKinds #-}
+--{-# LANGUAGE TypeApplications #-}
+
 module Persistance where 
 
 import System.Directory (doesFileExist)
 import Data.Function ((&))
+import qualified Money
+
+type BRL = Money.Dense "BRL"
 
 fileName :: String
 fileName = "./talisodiga.txt"
 
-persist :: String -> IO () 
-persist amount = writeFile fileName amount
+persist :: BRL -> IO () 
+persist amount = writeFile fileName (show amount)
 
 createFile :: () -> IO () 
-createFile () = persist "0.0"   
+createFile () = persist 0
 
-loadAmount :: () -> IO String 
-loadAmount file = 
+ensureFile :: () -> IO ()
+ensureFile () = 
   do
-    fileExists <- doesFileExist fileName
+    fileExists <- doesFileExist fileName 
 
-    if fileExists then readFile fileName else createFile () & \_ -> readFile fileName
+    if (not fileExists) then createFile () else return ()
 
+--loadAmount :: () -> BRL
+--loadAmount file = 
+--  do
+--    fileExists <- doesFileExist fileName
+--
+--    if fileExists 
+--       then 
+--        do 
+--          amount <- readFile fileName
+--          Money.denseFromDecimal Money.decimalConf_digits $ read amount
+--       else 
+--        do 
+--          amount <- readFile fileName
+--          createFile () & \_ -> Money.denseFromDecimal Money.decimalConf_digits $ read amount
 
+--increaseAmount :: BRL -> () 
+--increaseAmount invoice =
+--  do
+--    if invoice <= 0 
+--       then ()
+--       else 
+--        do
+--          currentAmount <- loadAmount () 
+--        
+--          let newAmount = invoice + currentAmount
+--          persist newAmount
