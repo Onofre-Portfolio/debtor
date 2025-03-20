@@ -1,7 +1,7 @@
 module Main where
 
 import System.Environment (getArgs)
-import Persistance (ensureFile)
+import Persistance (ensureFile, loadAmount, getDenseNumber)
 import Text.Printf (printf)
 
 tryParseCmd :: [String] -> Maybe String
@@ -18,9 +18,8 @@ main =
         case cmd of
           "see" -> 
             do
-              --debt <- loadAmount () 
-              --printf "There is your debt: R$%s" (show debt)
-              putStrLn "There is your debts: 0"
+              debt <- loadAmount () 
+              printf "There is your debt: R$%s\n" $ getDenseNumber debt
           "add" -> putStrLn "Add to the debt"
           "pay" -> putStrLn "Good job you have paid a part."
           _ -> putStrLn "Invalid command! [print help]"
