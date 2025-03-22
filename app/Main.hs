@@ -1,7 +1,13 @@
 module Main where
 
+import Persistance
+  ( Operation (..),
+    ensureFile,
+    getDenseNumber,
+    loadAmount,
+    operate,
+  )
 import System.Environment (getArgs)
-import Persistance (ensureFile, loadAmount, getDenseNumber)
 import Text.Printf (printf)
 
 tryParseCmd :: [String] -> Maybe String
@@ -16,11 +22,20 @@ main =
     case tryParseCmd args of
       Just cmd ->
         case cmd of
-          "see" -> 
+          "see" ->
             do
-              debt <- loadAmount () 
+              debt <- loadAmount ()
               printf "There is your debt: R$%s\n" $ getDenseNumber debt
-          "add" -> putStrLn "Add to the debt"
-          "pay" -> putStrLn "Good job you have paid a part."
+          "add" ->
+            do
+              operate Sum
+              newAmount <- loadAmount ()
+              printf "Updated debt: R$%s\n" $ getDenseNumber newAmount
+          "pay" ->
+            do
+              operate Minus
+              newAmount <- loadAmount ()
+              putStrLn "Good job you have paid a part!"
+              printf "Updated debt: R$%s\n" $ getDenseNumber newAmount
           _ -> putStrLn "Invalid command! [print help]"
       Nothing -> putStrLn "Please, provide a command [print help]"

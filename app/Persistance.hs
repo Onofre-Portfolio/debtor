@@ -1,12 +1,13 @@
 {-# LANGUAGE DataKinds #-}
---{-# LANGUAGE TypeApplications #-}
 
-module Persistance where 
+-- {-# LANGUAGE TypeApplications #-}
 
-import Data.Text (unpack, pack)
-import System.Directory (doesFileExist)
+module Persistance where
+
 import Data.Function ((&))
+import Data.Text (pack, unpack)
 import qualified Money
+import System.Directory (doesFileExist)
 import Text.Printf (printf)
 
 type BRL = Money.Dense "BRL"
@@ -14,33 +15,64 @@ type BRL = Money.Dense "BRL"
 fileName :: String
 fileName = "./talisodiga.txt"
 
-getThirdWord :: [String] -> String 
-getThirdWord [dense:currency:decimal] = decimal
+getThirdWord :: [String] -> String
+getThirdWord [dense : currency : decimal] = decimal
 getThirdWord _ = ""
 
-getDenseNumber :: BRL -> String 
-getDenseNumber dense = 
-  unpack 
-  $ Money.denseToDecimal Money.defaultDecimalConf Money.Round dense
+getDenseNumber :: BRL -> String
+getDenseNumber dense =
+  unpack $
+    Money.denseToDecimal Money.defaultDecimalConf Money.Round dense
 
-persist :: BRL -> IO () 
+persist :: BRL -> IO ()
 persist amount = writeFile fileName $ getDenseNumber amount
 
-createFile :: () -> IO () 
+createFile :: () -> IO ()
 createFile () = persist 0
 
 ensureFile :: () -> IO ()
-ensureFile () = 
+ensureFile () =
   do
-    fileExists <- doesFileExist fileName 
+    fileExists <- doesFileExist fileName
 
     if not fileExists then createFile () else return ()
 
 loadAmount :: () -> IO BRL
-loadAmount () = 
+loadAmount () =
   do
     amount <- readFile fileName
-    let maybe = Money.denseFromDecimal Money.defaultDecimalConf $ pack amount 
-    case maybe of 
+    let maybe = Money.denseFromDecimal Money.defaultDecimalConf $ pack amount
+    case maybe of
       Just a -> return (a :: BRL)
       Nothing -> fail "Corrupted data"
+
+data Operation = Sum | Minus
+
+getOperator :: Operation -> (BRL -> BRL -> BRL)
+getOperator operation =
+  case operation of
+    Sum -> (+)
+    Minus -> (-)
+
+operate :: Operation -> IO ()
+operate operation =
+  do
+    putStrLn "Amount:"
+    amount <-
+      ( do
+          raw <- getLine
+          let maybeAmount =
+                Money.denseFromDecimal Money.defaultDecimalConf $
+                  pack raw
+          case maybeAmount of
+            Just a -> return (a :: BRL)
+            Nothing -> fail "Invalid value!"
+        )
+    if amount <= (0 :: BRL)
+      then return ()
+      else
+        ( do
+            currentAmount <- loadAmount ()
+            let operator = getOperator operation
+            persist (operator currentAmount amount)
+        )
