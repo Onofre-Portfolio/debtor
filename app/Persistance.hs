@@ -35,7 +35,14 @@ ensureFile () =
   do
     fileExists <- doesFileExist fileName
 
-    if not fileExists then createFile () else return ()
+    if not fileExists
+      then createFile ()
+      else
+        ( do
+            content <- readFile fileName
+
+            if content == "" then createFile () else return ()
+        )
 
 loadAmount :: () -> IO BRL
 loadAmount () =
