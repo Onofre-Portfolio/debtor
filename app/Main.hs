@@ -14,6 +14,17 @@ tryParseCmd :: [String] -> Maybe String
 tryParseCmd [cmd] = Just cmd
 tryParseCmd _ = Nothing
 
+showHelp :: () -> IO ()
+showHelp () =
+  putStrLn
+    ( "\nPlease, provide a command\n"
+        ++ "[<Executable>] <command>\n"
+        ++ "  see -- Check the current debt\n"
+        ++ "  add -- Increase the debt\n"
+        ++ "  pay -- Pay a part, or total, of the debt\n"
+        ++ "  h   -- Print this menu"
+    )
+
 main :: IO ()
 main =
   do
@@ -37,5 +48,6 @@ main =
               newAmount <- loadAmount ()
               putStrLn "Good job you have paid a part!"
               printf "Updated debt: R$%s\n" $ getDenseNumber newAmount
-          _ -> putStrLn "Invalid command! [print help]"
-      Nothing -> putStrLn "Please, provide a command [print help]"
+          "h" -> showHelp ()
+          _ -> putStrLn "Invalid command!" >> showHelp ()
+      Nothing -> putStrLn "Please, provide a command!" >> showHelp ()
