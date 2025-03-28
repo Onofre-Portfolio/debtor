@@ -15,7 +15,7 @@ executable debtor
     other-modules:    Persistance
     default-language: Haskell2010
     build-depends:
-        base >=4.19 && <4.20,
+        base,
         text,
         directory,
         safe-money
