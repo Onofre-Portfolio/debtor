@@ -1,19 +1,23 @@
 {-# LANGUAGE DataKinds #-}
 
--- {-# LANGUAGE TypeApplications #-}
-
 module Persistance where
 
 import Data.Function ((&))
 import Data.Text (pack, unpack)
 import qualified Money
 import System.Directory (doesFileExist)
+import System.Environment (lookupEnv)
 import Text.Printf (printf)
 
 type BRL = Money.Dense "BRL"
 
-fileName :: String
-fileName = "./talisodiga.txt"
+filePath :: IO String
+filePath = do
+  maybeDev <- lookupEnv "IS_DEBTOR_DEV_ENV"
+
+  case maybeDev of
+    Just "true" -> return "./talisodiga.txt"
+    Nothing -> return "/usr/local/share/debtor/ledge.txt"
 
 getThirdWord :: [String] -> String
 getThirdWord [dense : currency : decimal] = decimal
@@ -25,7 +29,9 @@ getDenseNumber dense =
     Money.denseToDecimal Money.defaultDecimalConf Money.Round dense
 
 persist :: BRL -> IO ()
-persist amount = writeFile fileName $ getDenseNumber amount
+persist amount = do
+  fileName <- filePath
+  writeFile fileName $ getDenseNumber amount
 
 createFile :: () -> IO ()
 createFile () = persist 0
@@ -33,6 +39,7 @@ createFile () = persist 0
 ensureFile :: () -> IO ()
 ensureFile () =
   do
+    fileName <- filePath
     fileExists <- doesFileExist fileName
 
     if not fileExists
@@ -47,6 +54,7 @@ ensureFile () =
 loadAmount :: () -> IO BRL
 loadAmount () =
   do
+    fileName <- filePath
     amount <- readFile fileName
     let maybe = Money.denseFromDecimal Money.defaultDecimalConf $ pack amount
     case maybe of

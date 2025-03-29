@@ -17,7 +17,7 @@ tryParseCmd _ = Nothing
 showHelp :: () -> IO ()
 showHelp () =
   putStrLn
-    ( "\nPlease, provide a command\n"
+    ( "\nUsage:\n"
         ++ "[<Executable>] <command>\n"
         ++ "  see -- Check the current debt\n"
         ++ "  add -- Increase the debt\n"

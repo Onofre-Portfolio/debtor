@@ -21,6 +21,10 @@
             haskell-language-server
           ];
           withHoogle = true;
+
+          shellHook = ''
+            export IS_DEBTOR_DEV_ENV="true"
+          '';
         };
 
         devShells.deploy = pkgs.mkShell {
@@ -29,8 +33,9 @@
           ];
 
           shellHook = ''
+            mkdir /usr/local/share/debtor/
             cabal build
-            cabal install --installdir=/Users/tiagoonofre/Learning/BIN --overwrite-policy=always
+            cabal install --installdir=/usr/local/bin/ --overwrite-policy=always
             exit
           '';
         };
