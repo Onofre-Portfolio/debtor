@@ -1,6 +1,6 @@
 module Main where
 
-import Persistance
+import Persistence
   ( Operation (..),
     ensureFile,
     getDenseNumber,

@@ -1,12 +1,13 @@
 {-# LANGUAGE DataKinds #-}
 
-module Persistance where
+module Persistence where
 
 import Data.Function ((&))
 import Data.Text (pack, unpack)
 import qualified Money
 import System.Directory (doesFileExist)
 import System.Environment (lookupEnv)
+import qualified System.IO.Strict as S
 import Text.Printf (printf)
 
 type BRL = Money.Dense "BRL"
@@ -46,7 +47,7 @@ ensureFile () =
       then createFile ()
       else
         ( do
-            content <- readFile fileName
+            content <- S.readFile fileName
 
             if content == "" then createFile () else return ()
         )
