@@ -1,4 +1,4 @@
-# Debtor - A Self Payment Control
+# Add. Pay. See Progress — Debtor Keeps It Simple.
 
 For those who have achieved some level of financial control and can pay for their stuff without a credit card,
 You'll need to pay back yourself. This project holds 3 main functions to help you control it:
