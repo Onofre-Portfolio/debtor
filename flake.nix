@@ -33,9 +33,7 @@
           ];
 
           shellHook = ''
-            mkdir /usr/local/share/debtor/
-            cabal build
-            cabal install --installdir=/usr/local/bin/ --overwrite-policy=always
+            bash ./deploy.sh
             exit
           '';
         };
